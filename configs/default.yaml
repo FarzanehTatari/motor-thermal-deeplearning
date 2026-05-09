@@ -1,0 +1,58 @@
+# ----------------------------------------------------------------------
+# motor-thermal-deeplearning — default experiment config
+#
+# Override on the command line with --config <path> or edit values here.
+# ----------------------------------------------------------------------
+
+data:
+  csv_path: data/pmsm_temperature_data.csv
+  features:
+    - ambient
+    - coolant
+    - u_d
+    - u_q
+    - motor_speed
+    - torque
+    - i_d
+    - i_q
+  target: pm                # single-target by default; multi-target on roadmap
+
+sequence:
+  length: 256               # samples per window (~2 min @ Paderborn 2 Hz)
+  stride: 8                 # window stride; smaller = more samples, more memory
+
+cv:
+  n_profiles: 10            # number of profile_ids to use for leave-one-out CV
+  random_seed: 42           # for the load-coverage profile selection
+
+model:
+  gru:
+    hidden_size: 16
+    num_layers: 1
+    dropout: 0.0
+  lstm:
+    hidden_size: 13
+    num_layers: 1
+    dropout: 0.0
+  mlp:
+    hidden_sizes: [128, 64]
+    dropout: 0.0
+
+training:
+  optimizer: adam
+  lr: 1.0e-3
+  batch_size: 64
+  max_epochs: 200
+  patience: 20              # early-stopping patience on val MAE
+  num_seeds: 5              # random seeds per fold (CV only)
+  device: cpu               # set to "cuda" if you have a GPU
+
+evaluation:
+  metrics: [rmse, mae, maxae, latency]
+  latency_repeats: 20       # repeats per batch for inference timing
+
+paths:
+  results_dir: results
+  models_dir: results/models
+  tables_dir: results/tables
+  figures_dir: results/figures

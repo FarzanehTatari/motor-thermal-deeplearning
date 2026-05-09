@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+._*
+__MACOSX/
+
+# Editors / IDEs
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (download with kaggle CLI; not committed)
+data/
+
+# Project outputs (regenerable)
+results/models/
+results/logs/
+*.log

@@ -27,11 +27,11 @@ cv:
 
 model:
   gru:
-    hidden_size: 16
+    hidden_size: 64          # bumped from 16; Paderborn has enough data for real capacity
     num_layers: 1
     dropout: 0.0
   lstm:
-    hidden_size: 13
+    hidden_size: 56          # roughly parameter-matched to GRU(64) — 4 gates vs 3
     num_layers: 1
     dropout: 0.0
   mlp:
@@ -42,10 +42,10 @@ training:
   optimizer: adam
   lr: 1.0e-3
   batch_size: 64
-  max_epochs: 200
-  patience: 20              # early-stopping patience on val MAE
-  num_seeds: 5              # random seeds per fold (CV only)
-  device: cpu               # set to "cuda" if you have a GPU
+  max_epochs: 300            # bumped from 200; combined with target standardization
+  patience: 40               # bumped from 20 so early epochs of noise don't trigger
+  num_seeds: 5               # random seeds per fold (CV only)
+  device: cpu                # set to "cuda" if you have a GPU
 
 evaluation:
   metrics: [rmse, mae, maxae, latency]

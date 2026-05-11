@@ -39,6 +39,11 @@ class StandardScaler:
         std = np.where(self.std < 1e-8, 1.0, self.std)
         return (X - self.mean) / std
 
+    def inverse_transform(self, X: np.ndarray) -> np.ndarray:
+        """Reverse the z-score: y_real = y_z * std + mean."""
+        std = np.where(self.std < 1e-8, 1.0, self.std)
+        return X * std + self.mean
+
 
 # ---------------------------------------------------------------------------
 # Loading + profile selection
@@ -143,19 +148,27 @@ def build_dataloaders(
     length: int,
     stride: int,
     batch_size: int,
-) -> tuple[DataLoader, DataLoader, StandardScaler]:
-    """Fit StandardScaler on train profiles ONLY, then build per-profile sequences.
+) -> tuple[DataLoader, DataLoader, StandardScaler, StandardScaler]:
+    """Fit feature AND target scalers on train profiles ONLY, then build sequences.
 
-    Returns (train_loader, test_loader, scaler) for a single scalar target.
+    Returns (train_loader, test_loader, feature_scaler, target_scaler).
+
+    Both X and y are standardized to z-score using TRAIN stats only.
+    Predicting in z-space gives gradients of comparable magnitude across
+    features and target, and is the key stability fix that prevents RNNs
+    from collapsing to mean prediction. Scripts MUST call
+    target_scaler.inverse_transform() on predictions before reporting
+    metrics in original units (°C).
     """
     train_df = df[df["profile_id"].isin(train_profiles)]
-    scaler = StandardScaler.fit(train_df[features].values)
+    feature_scaler = StandardScaler.fit(train_df[features].values)
+    target_scaler = StandardScaler.fit(train_df[target].values)
 
     X_train_list, y_train_list = [], []
     for pid in train_profiles:
         sub = df[df["profile_id"] == pid].sort_index()
-        X = scaler.transform(sub[features].values)
-        y = sub[target].values
+        X = feature_scaler.transform(sub[features].values)
+        y = target_scaler.transform(sub[target].values)
         Xs, ys = make_sequences(X, y, length, stride)
         if len(Xs) > 0:
             X_train_list.append(Xs)
@@ -164,8 +177,8 @@ def build_dataloaders(
     X_test_list, y_test_list = [], []
     for pid in test_profiles:
         sub = df[df["profile_id"] == pid].sort_index()
-        X = scaler.transform(sub[features].values)
-        y = sub[target].values
+        X = feature_scaler.transform(sub[features].values)
+        y = target_scaler.transform(sub[target].values)
         Xs, ys = make_sequences(X, y, length, stride)
         if len(Xs) > 0:
             X_test_list.append(Xs)
@@ -193,4 +206,4 @@ def build_dataloaders(
         shuffle=False,
         drop_last=False,
     )
-    return train_loader, test_loader, scaler
+    return train_loader, test_loader, feature_scaler, target_scaler

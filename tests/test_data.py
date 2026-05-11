@@ -72,3 +72,20 @@ def test_standard_scaler_uses_train_stats_only():
     expected_std = X_train.std()
     expected = (X_test - expected_mean) / expected_std
     assert np.allclose(Xt, expected)
+
+
+def test_standard_scaler_round_trip_2d():
+    """inverse_transform(transform(X)) ≈ X for a 2-D feature matrix."""
+    X = np.array([[1.0, 10.0], [2.0, 20.0], [3.0, 30.0]])
+    s = StandardScaler.fit(X)
+    X_back = s.inverse_transform(s.transform(X))
+    assert np.allclose(X_back, X)
+
+
+def test_standard_scaler_round_trip_1d_target():
+    """inverse_transform(transform(y)) ≈ y for a 1-D target — needed for
+    denormalizing model predictions back to original units (°C)."""
+    y = np.array([20.0, 35.0, 50.0, 80.0, 95.0])
+    s = StandardScaler.fit(y)
+    y_back = s.inverse_transform(s.transform(y))
+    assert np.allclose(y_back, y)

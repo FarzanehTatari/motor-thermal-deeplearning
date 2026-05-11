@@ -45,7 +45,7 @@ def main() -> None:
         test_profiles = [test_pid]
         print(f"\n========== Fold {fold_idx+1}/{n_folds}  test profile = {test_pid} ==========")
 
-        train_loader, test_loader, _ = build_dataloaders(
+        train_loader, test_loader, _, target_scaler = build_dataloaders(
             df, train_profiles, test_profiles,
             features=cfg["data"]["features"],
             target=cfg["data"]["target"],
@@ -73,7 +73,10 @@ def main() -> None:
                     patience=cfg["training"]["patience"],
                     device=cfg["training"]["device"],
                 )
-                pred, true = predict(model, test_loader, cfg["training"]["device"])
+                pred_z, true_z = predict(model, test_loader, cfg["training"]["device"])
+                # Denormalize predictions and targets back to °C before reporting metrics.
+                pred = target_scaler.inverse_transform(pred_z)
+                true = target_scaler.inverse_transform(true_z)
                 m = regression_metrics(pred, true)
                 m.update(inference_latency(
                     model, test_loader, cfg["training"]["device"],

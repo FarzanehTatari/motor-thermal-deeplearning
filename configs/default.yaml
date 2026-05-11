@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------
 
 data:
-  csv_path: data/pmsm_temperature_data.csv
+  csv_path: data/measures_v2.csv
   features:
     - ambient
     - coolant

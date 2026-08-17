@@ -25,15 +25,21 @@ All three are evaluated on **leave-one-profile-out cross-validation** over the P
 
 ## Headline result
 
-> *Numbers are filled in after the first full CV run. The structure is fixed.*
+Cross-validation results on the `pm` (permanent-magnet rotor temperature) target — leave-one-profile-out across 10 representative Paderborn profiles × 5 random seeds = **50 runs per model**.
 
-| Model | Hidden units | RMSE [°C] | MAE [°C] | MaxAE [°C] | Inference [ms / win] |
+| Model | Capacity | RMSE [°C] | MAE [°C] | MaxAE [°C] | Latency [ms/batch] |
 | --- | --- | --- | --- | --- | --- |
-| MLP (baseline) | — | TBD | TBD | TBD | TBD |
-| LSTM | 13 | TBD | TBD | TBD | TBD |
-| **GRU** | **16** | **TBD** | **TBD** | **TBD** | **TBD** |
+| **MLP (baseline)** | **270,593 params** | **10.14 ± 4.82** | **8.48 ± 4.47** | **24.98 ± 9.69** | **~0.1** |
+| LSTM | 56 hidden (14,841 params) | 10.61 ± 5.55 | 9.02 ± 5.45 | 27.18 ± 10.10 | ~30.7 |
+| GRU  | 64 hidden (14,273 params) | 11.45 ± 6.13 | 9.97 ± 6.05 | 26.68 ± 10.28 | ~24.9 |
 
-Target: **permanent-magnet (PM) temperature** — the rotor analog in the Paderborn PMSM, comparable to the rotor-temperature target in my GVSETS 2026 EESM paper.
+Numbers are mean ± standard deviation across the 50 (fold, seed) pairs per model. Target: permanent-magnet (PM) rotor temperature — the rotor analog in the Paderborn PMSM, comparable to the rotor-temperature target in my GVSETS 2026 EESM paper.
+
+**A few observations worth flagging honestly:**
+
+- The **MLP baseline is competitive** despite ~20× more parameters — on this dataset, flattening a 256-sample window through two hidden layers captures much of the signal without needing recurrence.
+- The **LSTM slightly outperforms the GRU** at roughly parameter-matched capacity — the *opposite* direction from the GVSETS EESM finding where GRU was clearly better. The GRU-vs-LSTM ranking appears to be dataset-dependent, not universal.
+- **All three models show high per-fold variance** (std ≈ 5°C on RMSE) — a few held-out profiles are hard for every model. See Limitations for the underlying reason.
 
 ![Predicted vs ground-truth PM temperature trajectories on a held-out profile](results/figures/pm_temperature_comparison.png)
 
@@ -172,6 +178,7 @@ Covers the data loader (correct profile splits, no train/test leakage in the sta
 
 ## Limitations
 
+- **High per-fold variance from profile-to-profile distribution shift.** With only 10 profiles in the CV pool, each fold's held-out profile can exercise operating regions (high torque, high temperature) that the other 9 don't fully cover. Simple recurrent and feed-forward models don't generalize well across these gaps, giving std ≈ 5°C on top of a ~10°C RMSE mean. For reference, Kirchgässner et al. (2021) — the paper that originally published this dataset — achieved RMSE ≈ 4°C on `pm` using a thermal-physics-aware deep residual architecture trained on all 70+ profiles, a stronger baseline this repo doesn't attempt to match.
 - **Different motor topology than the related EESM work.** Paderborn is PMSM (permanent magnets in the rotor); my GVSETS / ITEC work is on EESM (electrically excited rotor with field winding `i_f`/`v_f`). The thermal-estimation problem class is identical; the rotor heat-source physics differs, so absolute numbers don't transfer between datasets.
 - **No on-vehicle / dynamometer validation in this repo.** Paderborn is itself a test-bench dataset, but this repo doesn't validate on a real vehicle.
 - **No real-time embedded benchmark.** Inference latency is reported on the development machine, not on an embedded ECU.

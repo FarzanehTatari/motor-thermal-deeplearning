@@ -191,7 +191,7 @@ Covers the data loader (correct profile splits, no train/test leakage in the sta
 
 This repo's methodology generalizes the author's two industrial papers on motor thermal modeling — both done on proprietary data and not directly publishable as code:
 
-- **F. Tatari, M. M. Aligoudarzi.** *Deep Learning-Based Rotor Temperature Estimation for Rare-Earth-Free Motors.* NDIA GVSETS 2026. *Proposes GRU and LSTM virtual sensors for rotor temperature estimation in a 190 kW EESM, with 10-fold CV showing GRU outperforming LSTM at parameter-matched capacity.*
+- **F. Tatari, M. M. Aligoudarzi.** *Deep Learning-Based Rotor Temperature Estimation for Rare-Earth-Free Motors.* NDIA GVSETS, 2026. [Paper](https://ndia-mich.org/2026%20tech%20papers/AAI/10%2020%20AM%20-%20GVSETS_paper_DL_rotor_temp.pdf) *Proposes GRU and LSTM virtual sensors for rotor temperature estimation in a 190 kW EESM, with 10-fold CV showing GRU outperforming LSTM at parameter-matched capacity.*
 - **F. Tatari, D. Trapp, J. Schneider, M. M. Aligoudarzi.** *Data-driven Thermal Modeling for Electrically Excited Synchronous Motors — A Supervised Machine Learning Approach.* IEEE Transportation Electrification Conference (ITEC), 2024. [Paper](https://ieeexplore.ieee.org/document/10595912)
 
 The Paderborn / Kaggle dataset itself is published in:

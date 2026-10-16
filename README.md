@@ -1,4 +1,5 @@
 # Motor Thermal Modeling with Deep Learning
+[![DOI](https://zenodo.org/badge/1233934664.svg)](https://doi.org/10.5281/zenodo.23407318)
 
 > Recurrent and feed-forward virtual sensors (LSTM, GRU, MLP) for online motor temperature estimation in permanent-magnet synchronous motor (PMSM) traction drives, on the publicly available Paderborn motor-temperature dataset. The methodology generalizes my published industrial work on rare-earth-free Electrically Excited Synchronous Motors (EESM) — see *Related publications* below — to an open benchmark, so anyone can reproduce.
 

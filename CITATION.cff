@@ -1,0 +1,34 @@
+# CITATION.cff — GitHub Citation File Format
+# https://citation-file-format.github.io/
+#
+# Place at the repo root as CITATION.cff. GitHub renders a "Cite this
+# repository" button, and Zenodo reads these fields when minting a DOI.
+ 
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "motor-thermal-deeplearning: Deep learning for rotor temperature estimation in electric traction motors"
+abstract: >-
+  Reference implementation of LSTM, GRU, and MLP virtual sensors for rotor
+  temperature estimation in permanent-magnet synchronous motors, trained and
+  evaluated on the public Paderborn University PMSM dataset with
+  leave-one-profile-out cross-validation. A clean-room, open-data companion
+  to the author's published work on data-driven thermal modeling for
+  electrically excited and rare-earth-free synchronous motors.
+type: software
+version: "0.1.0"
+date-released: "2026-08-17"
+license: MIT
+repository-code: "https://github.com/FarzanehTatari/motor-thermal-deeplearning"
+keywords:
+  - thermal estimation
+  - virtual sensor
+  - PMSM
+  - electric motor
+  - LSTM
+  - GRU
+  - deep learning
+  - automotive
+authors:
+  - family-names: Tatari
+    given-names: Farzaneh
+    orcid: "https://orcid.org/0000-0001-5176-3372"
